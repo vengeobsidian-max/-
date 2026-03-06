@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Calculator as CalculatorIcon, Database as DatabaseIcon, LayoutDashboard, BrainCircuit, Download, Upload } from 'lucide-react';
+import { Calculator as CalculatorIcon, Database as DatabaseIcon, LayoutDashboard, BrainCircuit, Download, Upload, Lock } from 'lucide-react';
 import { ProjectData, EstimateResult, AiInsight, SelectedSystems, BrandClass, SystemUnits, ComparisonDelta } from './types';
 import { INITIAL_PROJECTS, SAFETY_MARGIN } from './constants';
 import Dashboard from './components/Dashboard';
@@ -12,6 +12,22 @@ import { getAiAnalysis } from './services/geminiService';
 const LOGISTICS_RATE_PER_KM = 800; // Յուրաքանչյուր կմ-ի հավելյալ ծախս (֏)
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('hvac_auth') === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const correctPassword = import.meta.env.VITE_APP_PASSWORD || 'admin123';
+    if (passwordInput === correctPassword) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('hvac_auth', 'true');
+    } else {
+      alert('Սխալ գաղտնաբառ');
+    }
+  };
+
   const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'estimate'>('dashboard');
   const [projects, setProjects] = useState<ProjectData[]>(() => {
     const saved = localStorage.getItem('hvac_projects');
@@ -239,6 +255,41 @@ const App: React.FC = () => {
     } catch (error) { console.error("AI error:", error); }
     finally { setIsAiLoading(false); }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0F172A] font-sans text-slate-900 p-4">
+        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in fade-in zoom-in-95 duration-500">
+           <div className="flex justify-center mb-6">
+              <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-500/30">
+                <Lock className="text-white" size={32} />
+              </div>
+           </div>
+           <h2 className="text-2xl font-black text-center text-slate-800 mb-2 uppercase tracking-tight">Suren HVAC Պրո</h2>
+           <p className="text-center text-slate-500 text-sm mb-8 font-bold">Մուտքագրեք գաղտնաբառը համակարգ մուտք գործելու համար</p>
+           
+           <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <input 
+                  type="password" 
+                  value={passwordInput}
+                  onChange={e => setPasswordInput(e.target.value)}
+                  placeholder="Գաղտնաբառ..."
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium text-center text-lg"
+                  autoFocus
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-[#0F172A] hover:bg-blue-600 text-white font-black py-4 px-4 rounded-xl transition-all shadow-xl uppercase tracking-widest text-sm"
+              >
+                 Մուտք Գործել
+              </button>
+           </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F1F5F9] font-sans text-slate-900">
