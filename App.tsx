@@ -265,7 +265,7 @@ const App: React.FC = () => {
                 <Lock className="text-white" size={32} />
               </div>
            </div>
-           <h2 className="text-2xl font-black text-center text-slate-800 mb-2 uppercase tracking-tight">Suren HVAC Պրո</h2>
+           <h2 className="text-2xl font-black text-center text-slate-800 mb-2 uppercase tracking-tight">Գործերի արխիվածված արժեքների հիման վրա գնի որոշում</h2>
            <p className="text-center text-slate-500 text-sm mb-8 font-bold">Մուտքագրեք գաղտնաբառը համակարգ մուտք գործելու համար</p>
            
            <form onSubmit={handleLogin} className="space-y-4">
